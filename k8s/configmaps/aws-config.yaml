@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: aws-config
+  namespace: bookstore
+data:
+  aws-region: "us-east-1"
+  cognito-user-pool-id: "us-east-1_FoDklBXKR"
+  cognito-client-id: "3269eipqakrdr7ja8lh3t23h91"
+  bedrock-model-id: "amazon.nova-pro-v1:0"
