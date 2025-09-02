@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ui-service
+  namespace: bookstore
+  labels:
+    app: ui-service
+    tier: frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ui-service
+  template:
+    metadata:
+      labels:
+        app: ui-service
+        tier: frontend
+    spec:
+      containers:
+      - name: ui-service
+        image: 284333427150.dkr.ecr.us-east-1.amazonaws.com/online-bookstore/ui-service:latest
+        ports:
+        - containerPort: 3000
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: PORT
+          value: "3000"
+        - name: CATALOG_SERVICE_URL
+          value: "http://catalog-service:3001"
+        - name: CART_SERVICE_URL
+          value: "http://cart-service:3002"
+        - name: ORDER_SERVICE_URL
+          value: "http://order-service:3003"
+        - name: PAYMENT_SERVICE_URL
+          value: "http://payment-service:3004"
+        - name: USER_SERVICE_URL
+          value: "http://user-service:3005"
+        - name: CHATBOT_SERVICE_URL
+          value: "http://chatbot-service:3006"
+        - name: AWS_COGNITO_USER_POOL_ID
+          valueFrom:
+            configMapKeyRef:
+              name: aws-config
+              key: cognito-user-pool-id
+        - name: AWS_COGNITO_CLIENT_ID
+          valueFrom:
+            configMapKeyRef:
+              name: aws-config
+              key: cognito-client-id
+        - name: AWS_REGION
+          valueFrom:
+            configMapKeyRef:
+              name: aws-config
+              key: aws-region
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 5
